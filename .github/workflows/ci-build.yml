@@ -52,10 +52,10 @@ jobs:
           npm install -g mongosh
           mongosh mongodb://127.0.0.1:27017 -u root -p Mongo@123 --eval "use sample_db;" --eval "db.createUser({user: 'user', pwd: 'User123', roles : [{role: 'dbOwner', db: 'sample_db'}]});"
       - uses: actions/checkout@v3
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
           cache: maven
       - name: Build and Test with Maven
