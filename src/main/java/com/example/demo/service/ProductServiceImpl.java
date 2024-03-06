@@ -63,7 +63,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProductById(Integer id) {
-        products.remove(id);
+        products.remove(id.intValue());
     }
 
     @Override

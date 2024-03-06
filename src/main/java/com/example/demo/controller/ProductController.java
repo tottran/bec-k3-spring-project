@@ -39,7 +39,7 @@ public class ProductController {
         return ApiResponse.<Product>success(
             productService.updateProductById(id, product));
     }
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = "/{id}", consumes = MediaType.ALL_VALUE)
     public void deleteProductById(@PathVariable("id") Integer id) {
         productService.deleteProductById(id);
     }
