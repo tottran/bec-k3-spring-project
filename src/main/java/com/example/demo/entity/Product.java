@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Todo {
+public class Product {
     private Integer id;
     private String name;
     private Boolean isDone;
