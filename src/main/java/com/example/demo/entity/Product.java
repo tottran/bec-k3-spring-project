@@ -11,12 +11,4 @@ public class Product {
     private Integer id;
     private String name;
     private Boolean isDone;
-
-    public Boolean getDone() {
-        return isDone;
-    }
-
-    public void setDone(Boolean done) {
-        isDone = done;
-    }
 }
