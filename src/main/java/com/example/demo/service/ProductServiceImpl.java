@@ -24,16 +24,18 @@ public class ProductServiceImpl implements ProductService {
     }
     @Override
     public List<Product> getProducts(Integer limit, Integer skip) {
-        int page = skip / limit + 1;
-        int maxIndex = page * limit;
-        for (int i = 0; i < products.size(); i++) {
-            System.out.println(i + " - " + products.get(i).toString());
-        }
+            int page = skip / limit + 1;
+        int totalElements = products.size();
+        int remain = totalElements % limit;
+        boolean isLastPage = page == (totalElements / limit + remain);
+        int maxIndex = (page * (remain > 0 ? (limit - 1) : limit)) + remain;
         return
             skip > products.size() - 1 ? new ArrayList<>() :
             products.subList(
                 skip,
-                Math.min(skip + limit, maxIndex)
+                Math.min(
+                        skip + (isLastPage ? ((limit - 1) + remain): limit),
+                        maxIndex)
             );
     }
 

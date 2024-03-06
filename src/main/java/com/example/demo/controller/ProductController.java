@@ -25,19 +25,17 @@ public class ProductController {
     }
     @GetMapping(value = "/{id}", consumes = MediaType.ALL_VALUE)
     public ApiResponse<Product> getProductById(@PathVariable("id") Integer id) {
-        return ApiResponse.<Product>success(
-                productService.getProductById(id)
-        );
+        return ApiResponse.<Product>success(productService.getProductById(id));
     }
-    @PostMapping("/product/add")
-    public Product addProduct(@RequestBody Product product) {
-        return productService.addProduct(product);
+    @PostMapping("/add")
+    public ApiResponse<Product> addProduct(@RequestBody Product product) {
+        return ApiResponse.<Product>success(productService.addProduct(product));
     }
-    @PutMapping("/product/{id}")
+    @PutMapping("/{id}")
     public Product updateProductById(@PathVariable("id") Integer id, @RequestBody Product product) {
         return productService.updateProductById(id, product);
     }
-    @DeleteMapping("/product/{id}")
+    @DeleteMapping("/{id}")
     public void deleteProductById(@PathVariable("id") Integer id) {
         productService.deleteProductById(id);
     }
