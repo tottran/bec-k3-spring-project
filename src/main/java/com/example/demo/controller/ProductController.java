@@ -32,8 +32,12 @@ public class ProductController {
         return ApiResponse.<Product>success(productService.addProduct(product));
     }
     @PutMapping("/{id}")
-    public Product updateProductById(@PathVariable("id") Integer id, @RequestBody Product product) {
-        return productService.updateProductById(id, product);
+    public ApiResponse<Product> updateProductById(
+        @PathVariable("id") Integer id,
+        @RequestBody Product product
+    ) {
+        return ApiResponse.<Product>success(
+            productService.updateProductById(id, product));
     }
     @DeleteMapping("/{id}")
     public void deleteProductById(@PathVariable("id") Integer id) {

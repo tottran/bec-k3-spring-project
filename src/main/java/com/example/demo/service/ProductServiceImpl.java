@@ -53,7 +53,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product updateProductById(Integer id, Product newUpdateProduct) {
-        return products.set(id, newUpdateProduct);
+        Product oldProduct = products.get(id);
+        if(newUpdateProduct.getId()==null) newUpdateProduct.setId(oldProduct.getId());
+        if(newUpdateProduct.getName()==null) newUpdateProduct.setName(oldProduct.getName());
+        if(newUpdateProduct.getIsDone()==null) newUpdateProduct.setIsDone(oldProduct.getIsDone());
+        products.set(id, newUpdateProduct);
+        return newUpdateProduct;
     }
 
     @Override
