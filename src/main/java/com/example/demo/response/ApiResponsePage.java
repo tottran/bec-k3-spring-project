@@ -16,10 +16,10 @@ public class ApiResponsePage<T> {
     private int pageSize;
     private long totalElements;
     private long totalPages;
-    private List<T> data;
+    private Iterable<T> data;
 
     public static <T> ApiResponsePage<T> from(int page,  int pageSize,
-        Long totalElements, List<T> data) {
+        Long totalElements, Iterable<T> data) {
         long totalPages = totalElements / pageSize;
         long remains = totalElements % pageSize;
         if(remains != 0) {

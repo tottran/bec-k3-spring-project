@@ -1,56 +1,49 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Employer;
-import com.example.demo.entity.Product;
+import com.example.demo.errorcode.ErrorCode;
+import com.example.demo.exception.ApiException;
+import com.example.demo.repository.EmployerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployerServiceImpl implements EmployerService {
-    public EmployerServiceImpl() {
-        if(items.isEmpty()) {
-            this.createDummyItems();
-        }
+    private final EmployerRepository employerRepository;
+
+    @Autowired
+    public EmployerServiceImpl(EmployerRepository employerRepository) {
+        this.employerRepository = employerRepository;
     }
 
     @Override
-    public void createDummyItems() {
-        int id;
-        for (int i = 0; i < 20; i++) {
-            id = i;
-            items.add(new Employer(id, "test" + id, "test", "test", "test"));
-        }
+    public Iterable<Employer> getItems(Integer limit, Integer skip) {
+        return employerRepository.findAll();
     }
 
     @Override
-    public List<Employer> getItems(Integer limit, Integer skip) {
-        int page = skip / limit + 1;
-        int totalElements = items.size();
-        int remain = totalElements % limit;
-        boolean isLastPage = page == (totalElements / limit + remain);
-        int maxIndex = (page * (remain > 0 ? (limit - 1) : limit)) + remain;
-        return
-                skip > items.size() - 1 ? new ArrayList<>() :
-                        items.subList(
-                                skip,
-                                Math.min(
-                                        skip + (isLastPage ? ((limit - 1) + remain): limit),
-                                        maxIndex)
-                        );
-    }
-
-    @Override
-    public Employer getItemById(Integer id) {
-        return items.get(id);
+    public Optional<Employer> getItemById(Integer id) {
+        return employerRepository.findById(id);
     }
 
     @Override
     public Employer addItem(Employer item) {
-        Employer p = new Employer(item.getId(), item.getName(), item.getEmail(), item.getProvince(), item.getDescription());
-        items.add(p);
-        return p;
+        employerRepository.findByEmail(item.getEmail())
+                .ifPresent(employer -> {
+                    throw new ApiException(
+                            "email already exist",
+                            ErrorCode.BAD_REQUEST,
+                            HttpStatus.BAD_REQUEST
+                    );
+                });
+
+        Employer emp = employerRepository.save(item);
+        return emp;
     }
 
     @Override
