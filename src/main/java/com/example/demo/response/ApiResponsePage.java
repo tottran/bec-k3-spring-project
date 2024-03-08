@@ -5,21 +5,27 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder()
 public class ApiResponsePage<T> {
-    private int page;
-    private int pageSize;
-    private long totalElements;
-    private long totalPages;
-    private Iterable<T> data;
+    @Builder.Default
+    private int page = 1;
+    @Builder.Default
+    private int pageSize = 10;
+    @Builder.Default
+    private long totalElements = 0L;
+    @Builder.Default
+    private long totalPages = 0L;
+    @Builder.Default
+    private List<T> data = new ArrayList<>();
 
     public static <T> ApiResponsePage<T> from(int page,  int pageSize,
-        Long totalElements, Iterable<T> data) {
+        Long totalElements, List<T> data) {
         long totalPages = totalElements / pageSize;
         long remains = totalElements % pageSize;
         if(remains != 0) {

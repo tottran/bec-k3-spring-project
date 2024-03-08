@@ -1,11 +1,16 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.AbstractResponseController;
+import com.example.demo.dto.in.PageDtoIn;
 import com.example.demo.entity.Employer;
+import com.example.demo.exception.ApiException;
 import com.example.demo.response.ApiResponse;
-import com.example.demo.response.ApiResponsePage;
 import com.example.demo.service.EmployerService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -14,7 +19,7 @@ import java.util.Optional;
 @RequestMapping(value = "/employers",
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
-public class EmployerController {
+public class EmployerController extends AbstractResponseController {
     private final EmployerService employerService;
 
     @Autowired
@@ -23,37 +28,67 @@ public class EmployerController {
     }
 
     @GetMapping(value = "", consumes = MediaType.ALL_VALUE)
-    public ApiResponsePage<Employer> get(
-        @RequestParam(name = "limit", required = false, defaultValue = "5") Integer limit,
-        @RequestParam(name = "skip", required = false, defaultValue = "0") Integer skip
-    ) {
-        return ApiResponsePage.<Employer>from(skip, limit,
-                employerService.getItemsSize(),
-                employerService.getItems(limit, skip));
+    public ResponseEntity<?> get(@Valid PageDtoIn pageDtoIn) {
+        return responseEntity(() -> {
+            return this.employerService.getItems(pageDtoIn);
+        });
     }
     @GetMapping(value = "/{id}", consumes = MediaType.ALL_VALUE)
-    public ApiResponse<Optional<Employer>> getItemById(@PathVariable("id") Integer id) {
-        return ApiResponse.<Optional<Employer>>success(
+    public ApiResponse<?> getItemById(@PathVariable("id") Integer id) {
+        try {
+            return ApiResponse.<Optional<Employer>>success(
                 employerService.getItemById(id)
-        );
+            );
+        } catch(ApiException exception) {
+            return ApiResponse.<ApiException>error(
+                    exception.getErrorCode(),
+                    exception.getHttpStatus(),
+                    exception.getMessage()
+            );
+        }
     }
     @PostMapping(value = "/add", consumes = MediaType.ALL_VALUE)
-    public ApiResponse<Employer> addItem(@RequestBody Employer item) {
-        return ApiResponse.<Employer>success(
-                employerService.addItem(item)
-        );
+    public ApiResponse<?> addItem(@RequestBody Employer item) {
+        try {
+            return ApiResponse.<Employer>success(
+                    employerService.addItem(item), HttpStatus.CREATED
+            );
+        } catch(ApiException exception) {
+            return ApiResponse.<ApiException>error(
+                    exception.getErrorCode(),
+                    exception.getHttpStatus(),
+                    exception.getMessage()
+            );
+        }
     }
     @PutMapping(value = "/{id}")
-    public ApiResponse<Employer> updateItemById(
+    public ApiResponse<?> updateItemById(
             @PathVariable("id") Integer id,
             @RequestBody Employer item
     ) {
-        return ApiResponse.<Employer>success(
-                employerService.updateItemById(id, item)
-        );
+        try {
+            return ApiResponse.<Employer>success(
+                    employerService.updateItemById(id, item)
+            );
+        } catch(ApiException exception) {
+            return ApiResponse.<ApiException>error(
+                    exception.getErrorCode(),
+                    exception.getHttpStatus(),
+                    exception.getMessage()
+            );
+        }
     }
     @DeleteMapping(value = "/{id}", consumes = MediaType.ALL_VALUE)
-    public void deleteItemById(@PathVariable("id") Integer id) {
-        employerService.deleteItemById(id);
+    public ApiResponse<?> deleteItemById(@PathVariable("id") Integer id) {
+        try {
+            employerService.deleteItemById(id);
+            return ApiResponse.<String>success("removed!");
+        } catch(ApiException exception) {
+            return ApiResponse.<ApiException>error(
+                    exception.getErrorCode(),
+                    exception.getHttpStatus(),
+                    exception.getMessage()
+            );
+        }
     }
 }

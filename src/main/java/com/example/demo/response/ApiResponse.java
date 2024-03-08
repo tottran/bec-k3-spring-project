@@ -7,20 +7,29 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+import java.util.Optional;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApiResponse<T> {
     private Integer errorCode;
-    private Integer statusCode;
+    private HttpStatus statusCode;
     private String message;
     private T object;
 
+    public static <T> ApiResponse<T> success(T object, HttpStatus statusCode) {
+        return ApiResponse.<T>builder()
+                .errorCode(ErrorCode.SUCCESS)
+                .statusCode(statusCode)
+                .object(object)
+                .build();
+    }
     public static <T> ApiResponse<T> success(T object) {
         return ApiResponse.<T>builder()
                 .errorCode(ErrorCode.SUCCESS)
-                .statusCode(HttpStatus.OK.value())
+                .statusCode(HttpStatus.OK)
                 .object(object)
                 .build();
     }
@@ -29,7 +38,7 @@ public class ApiResponse<T> {
                                            String message) {
         return ApiResponse.<T>builder()
                 .errorCode(errorCode)
-                .statusCode(httpStatus.value())
+                .statusCode(httpStatus)
                 .message(message)
                 .build();
     }
