@@ -2,7 +2,7 @@ package vn.unigap.api.controller;
 
 import vn.unigap.api.dto.in.PageDtoIn;
 import vn.unigap.api.common.AbstractResponseController;
-import vn.unigap.api.entity.Employer;
+import vn.unigap.api.entity.jpa.Employer;
 import vn.unigap.api.exception.ApiException;
 import vn.unigap.api.response.ApiResponse;
 import vn.unigap.api.service.EmployerService;

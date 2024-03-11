@@ -1,4 +1,4 @@
-package vn.unigap.api.entity;
+package vn.unigap.api.entity.jpa;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,12 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Employer {
+public class JobProvince {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    private String email;
     private String name;
-    private String province;
-    private String description;
+    private String slug;
 }

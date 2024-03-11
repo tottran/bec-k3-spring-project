@@ -3,7 +3,7 @@ package vn.unigap.api.service;
 import vn.unigap.api.dto.in.PageDtoIn;
 import vn.unigap.api.dto.out.PageDtoOut;
 import vn.unigap.api.dto.out.EmployerDtoOut;
-import vn.unigap.api.entity.Employer;
+import vn.unigap.api.entity.jpa.Employer;
 
 import java.util.Optional;
 

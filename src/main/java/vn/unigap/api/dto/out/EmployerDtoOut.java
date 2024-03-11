@@ -1,6 +1,6 @@
 package vn.unigap.api.dto.out;
 
-import vn.unigap.api.entity.Employer;
+import vn.unigap.api.entity.jpa.Employer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class EmployerDtoOut {
-    private Integer id;
+    private Long id;
     private String email;
     private String name;
-    private String province;
+    private Integer province;
     private String description;
 
     public static EmployerDtoOut from(Employer employer) {

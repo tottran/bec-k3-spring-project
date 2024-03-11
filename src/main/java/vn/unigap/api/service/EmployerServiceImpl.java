@@ -3,7 +3,8 @@ package vn.unigap.api.service;
 import vn.unigap.api.dto.in.PageDtoIn;
 import vn.unigap.api.dto.out.PageDtoOut;
 import vn.unigap.api.dto.out.EmployerDtoOut;
-import vn.unigap.api.entity.Employer;
+import vn.unigap.api.entity.jpa.Employer;
+import vn.unigap.api.entity.jpa.JobProvince;
 import vn.unigap.api.errorcode.ErrorCode;
 import vn.unigap.api.exception.ApiException;
 import vn.unigap.api.repository.EmployerRepository;
@@ -13,16 +14,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import vn.unigap.api.repository.JobProvinceRepository;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Service
 public class EmployerServiceImpl implements EmployerService {
     private final EmployerRepository employerRepository;
+    private final JobProvinceRepository jobProvinceRepository;
 
     @Autowired
-    public EmployerServiceImpl(EmployerRepository employerRepository) {
+    public EmployerServiceImpl(EmployerRepository employerRepository, JobProvinceRepository jobProvinceRepository) {
         this.employerRepository = employerRepository;
+        this.jobProvinceRepository = jobProvinceRepository;
     }
 
     @Override
@@ -47,6 +52,14 @@ public class EmployerServiceImpl implements EmployerService {
                         "user not found",
                         ErrorCode.NOT_FOUND,
                         HttpStatus.NOT_FOUND));
+
+        JobProvince jobProvince = jobProvinceRepository.findById(emp.getProvince())
+                .orElseThrow(() -> new ApiException(
+                        "provinceId is not exist",
+                        ErrorCode.NOT_FOUND,
+                        HttpStatus.NOT_FOUND
+                ));
+
         return Optional.ofNullable(emp);
     }
 
@@ -60,6 +73,12 @@ public class EmployerServiceImpl implements EmployerService {
                             HttpStatus.BAD_REQUEST
                     );
                 });
+        jobProvinceRepository.findById(item.getProvince())
+                .orElseThrow(() -> new ApiException(
+                        "provinceId is not exist",
+                        ErrorCode.NOT_FOUND,
+                        HttpStatus.NOT_FOUND
+                ));
 
         Employer emp = employerRepository.save(item);
         return emp;
@@ -72,10 +91,16 @@ public class EmployerServiceImpl implements EmployerService {
                     "user not found",
                     ErrorCode.NOT_FOUND,
                     HttpStatus.NOT_FOUND));
-        emp.setName(updateItem.getName());
-        emp.setEmail(updateItem.getEmail());
-        emp.setProvince(updateItem.getProvince());
-        emp.setDescription(updateItem.getDescription());
+
+        if(updateItem.getName()!=null)
+            emp.setName(updateItem.getName());
+        if(updateItem.getEmail()!=null)
+            emp.setEmail(updateItem.getEmail());
+        if(updateItem.getProvince()!=null)
+            emp.setProvince(updateItem.getProvince());
+        if(updateItem.getDescription()!=null)
+            emp.setDescription(updateItem.getDescription());
+        emp.setUpdatedAt(new Date());
         return emp;
     }
 
@@ -86,6 +111,7 @@ public class EmployerServiceImpl implements EmployerService {
                         "user not found",
                         ErrorCode.NOT_FOUND,
                         HttpStatus.NOT_FOUND));
-        employerRepository.delete(emp);
+        if(emp!=null)
+            employerRepository.delete(emp);
     }
 }
