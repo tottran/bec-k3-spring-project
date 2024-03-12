@@ -13,11 +13,11 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor
 public class ApiResponse<T> {
     private Integer errorCode;
-    private HttpStatus statusCode;
+    private Integer statusCode;
     private String message;
     private T object;
 
-    public static <T> ApiResponse<T> success(T object, HttpStatus statusCode) {
+    public static <T> ApiResponse<T> success(T object, Integer statusCode) {
         return ApiResponse.<T>builder()
                 .errorCode(ErrorCode.SUCCESS)
                 .statusCode(statusCode)
@@ -27,12 +27,12 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> success(T object) {
         return ApiResponse.<T>builder()
                 .errorCode(ErrorCode.SUCCESS)
-                .statusCode(HttpStatus.OK)
+                .statusCode(HttpStatus.OK.value())
                 .object(object)
                 .build();
     }
     public static <T> ApiResponse<T> error(Integer errorCode,
-                                           HttpStatus httpStatus,
+                                           Integer httpStatus,
                                            String message) {
         return ApiResponse.<T>builder()
                 .errorCode(errorCode)

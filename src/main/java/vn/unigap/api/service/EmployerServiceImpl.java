@@ -51,13 +51,13 @@ public class EmployerServiceImpl implements EmployerService {
                 .orElseThrow(() -> new ApiException(
                         "user not found",
                         ErrorCode.NOT_FOUND,
-                        HttpStatus.NOT_FOUND));
+                        HttpStatus.NOT_FOUND.value()));
 
         JobProvince jobProvince = jobProvinceRepository.findById(emp.getProvince())
                 .orElseThrow(() -> new ApiException(
                         "provinceId is not exist",
                         ErrorCode.NOT_FOUND,
-                        HttpStatus.NOT_FOUND
+                        HttpStatus.NOT_FOUND.value()
                 ));
 
         return Optional.ofNullable(emp);
@@ -70,14 +70,14 @@ public class EmployerServiceImpl implements EmployerService {
                     throw new ApiException(
                             "email already exist",
                             ErrorCode.BAD_REQUEST,
-                            HttpStatus.BAD_REQUEST
+                            HttpStatus.BAD_REQUEST.value()
                     );
                 });
         jobProvinceRepository.findById(item.getProvince())
                 .orElseThrow(() -> new ApiException(
                         "provinceId is not exist",
                         ErrorCode.NOT_FOUND,
-                        HttpStatus.NOT_FOUND
+                        HttpStatus.NOT_FOUND.value()
                 ));
 
         Employer emp = employerRepository.save(item);
@@ -90,7 +90,7 @@ public class EmployerServiceImpl implements EmployerService {
             .orElseThrow(() -> new ApiException(
                     "user not found",
                     ErrorCode.NOT_FOUND,
-                    HttpStatus.NOT_FOUND));
+                    HttpStatus.NOT_FOUND.value()));
 
         if(updateItem.getName()!=null)
             emp.setName(updateItem.getName());
@@ -110,7 +110,7 @@ public class EmployerServiceImpl implements EmployerService {
                 .orElseThrow(() -> new ApiException(
                         "user not found",
                         ErrorCode.NOT_FOUND,
-                        HttpStatus.NOT_FOUND));
+                        HttpStatus.NOT_FOUND.value()));
         if(emp!=null)
             employerRepository.delete(emp);
     }

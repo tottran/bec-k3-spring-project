@@ -57,7 +57,7 @@ public class EmployerController extends AbstractResponseController {
     public ApiResponse<?> addItem(@RequestBody Employer item) {
         try {
             return ApiResponse.<Employer>success(
-                    employerService.addItem(item), HttpStatus.CREATED
+                    employerService.addItem(item), HttpStatus.CREATED.value()
             );
         } catch(ApiException exception) {
             return ApiResponse.<ApiException>error(

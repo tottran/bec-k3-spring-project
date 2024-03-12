@@ -14,7 +14,8 @@ public class EmployerDtoOut {
     private Long id;
     private String email;
     private String name;
-    private Integer province;
+    private Integer provinceId;
+    private String provinceName;
     private String description;
 
     public static EmployerDtoOut from(Employer employer) {
@@ -22,7 +23,7 @@ public class EmployerDtoOut {
                 .id(employer.getId())
                 .email(employer.getEmail())
                 .name(employer.getName())
-                .province(employer.getProvince())
+                .provinceId(employer.getProvince())
                 .description(employer.getDescription())
                 .build();
     }
