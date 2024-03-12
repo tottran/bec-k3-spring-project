@@ -88,7 +88,7 @@ public class EmployerController extends AbstractResponseController {
     public ApiResponse<?> deleteItemById(@PathVariable("id") Integer id) {
         try {
             employerService.deleteItemById(id);
-            return ApiResponse.<String>success(new Object().toString());
+            return ApiResponse.<String>success("{}");
         } catch(ApiException exception) {
             return ApiResponse.<ApiException>error(
                     exception.getErrorCode(),
