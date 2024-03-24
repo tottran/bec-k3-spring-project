@@ -1,9 +1,9 @@
 package vn.unigap.api.controller;
 
 import vn.unigap.api.dto.in.PageDtoIn;
-import vn.unigap.api.common.AbstractResponseController;
+import vn.unigap.api.common.controller.AbstractResponseController;
+import vn.unigap.api.common.exception.ApiException;
 import vn.unigap.api.entity.jpa.Employer;
-import vn.unigap.api.exception.ApiException;
 import vn.unigap.api.response.ApiResponse;
 import vn.unigap.api.service.EmployerService;
 import jakarta.validation.Valid;
@@ -20,9 +20,9 @@ import java.util.Optional;
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
 public class EmployerController extends AbstractResponseController {
+    @Autowired
     private final EmployerService employerService;
 
-    @Autowired
     public EmployerController(EmployerService employerService) {
         this.employerService = employerService;
     }
@@ -31,7 +31,7 @@ public class EmployerController extends AbstractResponseController {
     public ResponseEntity<?> get(@Valid PageDtoIn pageDtoIn) {
         try {
             return responseEntity(() -> {
-                return this.employerService.getItems(pageDtoIn);
+                return this.employerService.list(pageDtoIn);
             });
         } catch(ApiException exception) {
             return responseEntity(() -> {
@@ -39,42 +39,50 @@ public class EmployerController extends AbstractResponseController {
             });
         }
     }
+    
     @GetMapping(value = "/{id}", consumes = MediaType.ALL_VALUE)
-    public ApiResponse<?> getItemById(@PathVariable("id") Integer id) {
+    public ResponseEntity<?> get(@PathVariable("id") Long id) {
+      return responseEntity(() -> {
+        return this.employerService.get(id);
+      });
+    }
+
+    @GetMapping(value = "/name", consumes = MediaType.ALL_VALUE)
+    public ResponseEntity<?> getEmployerByName(
+            @RequestParam("name") String name
+    ) {
         try {
-            return ApiResponse.<Optional<Employer>>success(
-                employerService.getItemById(id)
-            );
-        } catch(ApiException exception) {
-            return ApiResponse.<ApiException>error(
-                    exception.getErrorCode(),
-                    exception.getHttpStatus(),
-                    exception.getMessage()
-            );
+            Optional<Employer> employer = employerService.getByName(name);
+            System.out.println(" ***************" + name);
+            if (employer != null) {
+                return ResponseEntity.ok().body(employer);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch(Error error) {
+            return ResponseEntity.noContent().build();
         }
     }
     @PostMapping(value = "/add", consumes = MediaType.ALL_VALUE)
-    public ApiResponse<?> addItem(@RequestBody Employer item) {
-        try {
-            return ApiResponse.<Employer>success(
-                    employerService.addItem(item), HttpStatus.CREATED.value()
-            );
-        } catch(ApiException exception) {
-            return ApiResponse.<ApiException>error(
-                    exception.getErrorCode(),
-                    exception.getHttpStatus(),
-                    exception.getMessage()
-            );
-        }
+    public ApiResponse<?> add(@RequestBody Employer item) {
+      try {
+        return ApiResponse.<Employer>success(
+            employerService.add(item), HttpStatus.CREATED);
+      } catch (ApiException exception) {
+        return ApiResponse.<ApiException>error(
+            exception.getErrorCode(),
+            exception.getHttpStatus(),
+            exception.getMessage());
+      }
     }
     @PutMapping(value = "/{id}")
-    public ApiResponse<?> updateItemById(
-            @PathVariable("id") Integer id,
+    public ApiResponse<?> update(
+            @PathVariable("id") Long id,
             @RequestBody Employer item
     ) {
         try {
             return ApiResponse.<Employer>success(
-                    employerService.updateItemById(id, item)
+                    employerService.update(id, item)
             );
         } catch(ApiException exception) {
             return ApiResponse.<ApiException>error(
@@ -85,9 +93,9 @@ public class EmployerController extends AbstractResponseController {
         }
     }
     @DeleteMapping(value = "/{id}", consumes = MediaType.ALL_VALUE)
-    public ApiResponse<?> deleteItemById(@PathVariable("id") Integer id) {
+    public ApiResponse<?> delete(@PathVariable("id") Long id) {
         try {
-            employerService.deleteItemById(id);
+            employerService.delete(id);
             return ApiResponse.<String>success("{}");
         } catch(ApiException exception) {
             return ApiResponse.<ApiException>error(

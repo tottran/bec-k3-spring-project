@@ -1,4 +1,4 @@
-package vn.unigap.api.common;
+package vn.unigap.api.common.controller;
 
 import vn.unigap.api.response.ApiResponse;
 import org.springframework.http.HttpStatus;
@@ -10,7 +10,7 @@ public abstract class AbstractResponseController {
     }
 
     public <T> ResponseEntity<ApiResponse<T>> responseEntity(CallbackFunction<T> callback, HttpStatus status) {
-        T result = callback.execute();
-        return ResponseEntity.status(status).body(ApiResponse.success(result));
+      T result = callback.execute();
+      return ResponseEntity.status(status).body(ApiResponse.success(result));
     }
 }
