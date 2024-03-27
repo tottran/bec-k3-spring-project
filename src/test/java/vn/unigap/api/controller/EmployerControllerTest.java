@@ -3,9 +3,11 @@ package vn.unigap.api.controller;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hibernate.mapping.Array;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +26,7 @@ import vn.unigap.api.service.EmployerService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
@@ -90,4 +93,72 @@ public class EmployerControllerTest {
                  .andExpect(jsonPath("$.object.data[1].email").value("email2@example.com"))
                 ;
      }
+
+    @Test
+    public void testAddEmployer() throws Exception {
+         // Mock data
+         Employer employer1 = new Employer(1L, "email1@example.com", "Employer 1", 1, "descriptions", new Date(), new Date());
+
+         // Mock service response
+         given(employerService.add(any(Employer.class))).willReturn(employer1);
+
+         // Perform POST request to controller endpoint
+         mockMvc.perform(
+                    post("http://localhost:4001/employers/add")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(asJsonString(employer1))
+                 ).andExpect(status().isOk())
+                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                 .andExpect(jsonPath("$.object.id").value(1))
+                 .andExpect(jsonPath("$.object.name").value("Employer 1"))
+                 .andExpect(jsonPath("$.object.email").value("email1@example.com"));
+     }
+
+    @Test
+    public void testUpdateEmployer() throws Exception {
+        // Mock data
+        Long id = 1L;
+        Employer updatedEmployer = new Employer();
+        updatedEmployer.setId(id);
+        updatedEmployer.setName("Updated Employer");
+
+        // Khởi tạo đối tượng response cho service
+        Employer employer = new Employer(id, "updatedemail@example.com", "Updated Employer", 1, "Description", new Date(), new Date());
+        given(employerService.update(anyLong(), any(Employer.class))).willReturn(employer);
+
+        // Perform PUT request to controller endpoint
+        mockMvc.perform(put("http://localhost:4001/employers/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(updatedEmployer))
+        )
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.object.id").value(id))
+                .andExpect(jsonPath("$.object.name").value("Updated Employer"));
+    }
+
+    public static String asJsonString(final Object obj) {
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+            final String jsonContent = mapper.writeValueAsString(obj);
+            return jsonContent;
+        } catch(Exception e) {
+            throw new RuntimeException();
+        }
+    }
+
+
+    @Test
+    public void testDeleteEmployer() throws Exception {
+        // Mock data
+        Long id = 1L;
+
+        // Perform PUT request to controller endpoint
+        mockMvc.perform(delete("http://localhost:4001/employers/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
 }
+

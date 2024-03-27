@@ -8,12 +8,9 @@ import vn.unigap.api.response.ApiResponse;
 import vn.unigap.api.service.EmployerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/employers",
@@ -41,62 +38,26 @@ public class EmployerController extends AbstractResponseController {
       });
     }
 
-    @GetMapping(value = "/name", consumes = MediaType.ALL_VALUE)
-    public ResponseEntity<?> getByName(
-            @RequestParam("name") String name
-    ) {
-        try {
-            Optional<Employer> employer = employerService.getByName(name);
-            System.out.println(" ***************" + name);
-            if (employer != null) {
-                return ResponseEntity.ok().body(employer);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch(Error error) {
-            return ResponseEntity.noContent().build();
-        }
-    }
     @PostMapping(value = "/add", consumes = MediaType.ALL_VALUE)
-    public ApiResponse<?> add(@RequestBody Employer item) {
-      try {
-        return ApiResponse.<Employer>success(
-            employerService.add(item), HttpStatus.CREATED);
-      } catch (ApiException exception) {
-        return ApiResponse.<ApiException>error(
-            exception.getErrorCode(),
-            exception.getHttpStatus(),
-            exception.getMessage());
-      }
+    public ResponseEntity<?> add(@RequestBody Employer item) {
+        return responseEntity(() -> {
+            return employerService.add(item);
+        });
     }
     @PutMapping(value = "/{id}")
-    public ApiResponse<?> update(
+    public ResponseEntity<?> update(
             @PathVariable("id") Long id,
             @RequestBody Employer item
     ) {
-        try {
-            return ApiResponse.<Employer>success(
-                    employerService.update(id, item)
-            );
-        } catch(ApiException exception) {
-            return ApiResponse.<ApiException>error(
-                    exception.getErrorCode(),
-                    exception.getHttpStatus(),
-                    exception.getMessage()
-            );
-        }
+        return responseEntity(() -> {
+            return employerService.update(id, item);
+        });
     }
     @DeleteMapping(value = "/{id}", consumes = MediaType.ALL_VALUE)
-    public ApiResponse<?> delete(@PathVariable("id") Long id) {
-        try {
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+        return responseEntity(() -> {
             employerService.delete(id);
-            return ApiResponse.<String>success("{}");
-        } catch(ApiException exception) {
-            return ApiResponse.<ApiException>error(
-                    exception.getErrorCode(),
-                    exception.getHttpStatus(),
-                    exception.getMessage()
-            );
-        }
+            return null;
+        });
     }
 }

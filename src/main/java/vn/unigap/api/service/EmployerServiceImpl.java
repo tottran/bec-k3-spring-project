@@ -25,12 +25,6 @@ public class EmployerServiceImpl implements EmployerService {
     @Autowired
     private JobProvinceRepository jobProvinceRepository;
 
-    //    @Autowired
-    //    public EmployerServiceImpl(EmployerRepository employerRepository, JobProvinceRepository jobProvinceRepository) {
-    //        this.employerRepository = employerRepository;
-    //        this.jobProvinceRepository = jobProvinceRepository;
-    //    }
-
     @Override
     public PageDtoOut<EmployerDtoOut> list(PageDtoIn pageDtoIn) {
         Page<Employer> employers = this.employerRepository.findAll(

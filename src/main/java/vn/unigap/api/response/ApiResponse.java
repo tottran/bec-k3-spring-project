@@ -22,6 +22,15 @@ public class ApiResponse<T> {
       return ApiResponse.<T>builder()
           .errorCode(ErrorCode.SUCCESS)
           .statusCode(HttpStatus.OK)
+          .message("Successfully")
+          .object(object)
+          .build();
+    }
+    public static <T> ApiResponse<T> success(T object, String message) {
+      return ApiResponse.<T>builder()
+          .errorCode(ErrorCode.SUCCESS)
+          .statusCode(HttpStatus.OK)
+          .message(message)
           .object(object)
           .build();
     }
@@ -29,6 +38,7 @@ public class ApiResponse<T> {
       return ApiResponse.<T>builder()
               .errorCode(ErrorCode.SUCCESS)
               .statusCode(statusCode)
+              .message("Successfully")
               .object(object)
               .build();
   }
