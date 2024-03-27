@@ -5,6 +5,7 @@ import vn.unigap.api.dto.in.PageDtoIn;
 import vn.unigap.api.dto.out.PageDtoOut;
 import vn.unigap.api.dto.out.EmployerDtoOut;
 import vn.unigap.api.entity.jpa.Employer;
+import vn.unigap.api.entity.jpa.JobProvince;
 import vn.unigap.api.errorcode.ErrorCode;
 import vn.unigap.api.repository.EmployerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,9 @@ import org.springframework.stereotype.Service;
 import vn.unigap.api.repository.JobProvinceRepository;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployerServiceImpl implements EmployerService {
@@ -31,20 +34,41 @@ public class EmployerServiceImpl implements EmployerService {
                 PageRequest.of(pageDtoIn.getPage() - 1,
                 pageDtoIn.getPageSize(),
                 Sort.by("id").ascending()));
+
+        List<EmployerDtoOut> employerDtoOutList = employers.stream()
+                .map(employer -> {
+                    // Lấy dữ liệu provinceName từ JobProvinceRepository
+                    Optional<JobProvince> jobProvince = jobProvinceRepository.findById(employer.getProvince());
+                    String provinceName = jobProvince.map(JobProvince::getName).orElse(null);
+
+                    // Tạo đối tượng EmployerDtoOut và điền thông tin vào
+                    EmployerDtoOut employerDtoOut = EmployerDtoOut.from(employer);
+                    employerDtoOut.setProvinceName(provinceName);
+
+                    return employerDtoOut;
+                })
+                .toList();
+
         return PageDtoOut.from(
                 pageDtoIn.getPage(),
                 pageDtoIn.getPageSize(),
-                employers.getTotalElements(),
-                employers.stream()
-                .map(EmployerDtoOut::from)
-                .toList());
+                employers.getTotalElements(), employerDtoOutList);
     }
 
     @Override
     public EmployerDtoOut get(Long id) {
-      Employer emp = employerRepository.findById(id)
-          .orElseThrow(() -> new ApiException("user not found", ErrorCode.NOT_FOUND, HttpStatus.NOT_FOUND));
-        return EmployerDtoOut.from(emp);
+      Employer employer = employerRepository.findById(id)
+          .orElseThrow(() -> new ApiException("Employer not found", ErrorCode.NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        // Lấy dữ liệu provinceName từ JobProvinceRepository
+        Optional<JobProvince> optionalProvince = jobProvinceRepository.findById(employer.getProvince());
+        String provinceName = optionalProvince.map(JobProvince::getName).orElse(null);
+
+        // Tạo đối tượng EmployerDtoOut và điền thông tin vào
+        EmployerDtoOut employerDtoOut = EmployerDtoOut.from(employer);
+        employerDtoOut.setProvinceName(provinceName);
+
+        return employerDtoOut;
     }
 
     @Override
