@@ -28,16 +28,10 @@ public class EmployerController extends AbstractResponseController {
     }
 
     @GetMapping(value = "", consumes = MediaType.ALL_VALUE)
-    public ResponseEntity<?> get(@Valid PageDtoIn pageDtoIn) {
-        try {
-            return responseEntity(() -> {
-                return this.employerService.list(pageDtoIn);
-            });
-        } catch(ApiException exception) {
-            return responseEntity(() -> {
-                return exception;
-            });
-        }
+    public ResponseEntity<?> list(@Valid PageDtoIn pageDtoIn) {
+      return responseEntity(() -> {
+          return this.employerService.list(pageDtoIn);
+      });
     }
     
     @GetMapping(value = "/{id}", consumes = MediaType.ALL_VALUE)
@@ -48,7 +42,7 @@ public class EmployerController extends AbstractResponseController {
     }
 
     @GetMapping(value = "/name", consumes = MediaType.ALL_VALUE)
-    public ResponseEntity<?> getEmployerByName(
+    public ResponseEntity<?> getByName(
             @RequestParam("name") String name
     ) {
         try {

@@ -9,12 +9,9 @@ import java.util.Optional;
 
 public interface EmployerService {
   PageDtoOut<EmployerDtoOut> list(PageDtoIn pageDtoIn);
-    
-    // Optional<Employer> get(Long id);
-    EmployerDtoOut get(Long id);
-    
-    Optional<Employer> getByName(String name);
-    Employer add(Employer item);
-    Employer update(Long id, Employer updateItem);
-    void delete(Long id);
+  EmployerDtoOut get(Long id);
+  Optional<Employer> getByName(String name);
+  Employer add(Employer item);
+  Employer update(Long id, Employer updateItem);
+  void delete(Long id);
 }
